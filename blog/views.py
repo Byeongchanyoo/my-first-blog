@@ -20,6 +20,12 @@ def post_list(request):
     return JsonResponse({"post_list": post_data}, status=HTTPStatus.OK)
 
 
+@require_http_methods(["GET"])
+def post_detail(request, pk):
+
+    return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
     try:

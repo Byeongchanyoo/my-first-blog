@@ -28,15 +28,27 @@ class TestPost(TestCase):
                 user=self.user, title="test_post_list_title", text="test_post_list_text"
             )
 
-        # When: post_list view를 호출하면,
+        # When: post_list view 를 호출하면,
         response = self.client.get(reverse("post_list"))
 
-        # Then: status_code가 200이 되어야 한다.
+        # Then: status_code 가 200이 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-        # And: 생성된 post의 개수가 30개로 일치해야 한다.
+        # And: 생성된 post 의 개수가 30개로 일치해야 한다.
         post_list = json.loads(response.json()['post_list'])
         self.assertEqual(len(post_list), 30)
+
+    def test_post_detail_should_return_200_ok_when_use_valid_pk(self):
+        # Given: 1개의 post를 생성하고,
+        post = self._create_new_post(
+            user=self.user, title="test_post_detail_title", text="test_post_detail_text"
+        )
+
+        # When: post_detail view 를 호출하면,
+        response = self.client.get(reverse("post_detail", kwargs={"pk": post.pk}))
+
+        # Then: 리턴된 status_code 가 200이 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
@@ -47,8 +59,9 @@ class TestPost(TestCase):
         # When: post_update view 를 호출하면,
         response = self.client.put(reverse("post_edit", kwargs={"pk": post.pk}), data=put_data)
 
-        # Then: status_code가 200으로 리턴되어야 한다
+        # Then: status_code 가 200으로 리턴되어야 한다
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
         # And: post의 title이 "updated test title" 이어야 한다.
         updated_post = Post.objects.get(id=post.id)
         self.assertEqual(updated_post.title, "updated test title")
