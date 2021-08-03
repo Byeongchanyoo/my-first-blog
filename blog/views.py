@@ -17,13 +17,17 @@ def date_time_handler(value):
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date")
     post_data = json.dumps([post for post in posts.values()], default=date_time_handler)
-    return JsonResponse({"post_list": post_data}, status=HTTPStatus.OK)
+    return JsonResponse(data={"post_data": post_data}, status=HTTPStatus.OK)
 
 
 @require_http_methods(["GET"])
 def post_detail(request, pk):
+    post = Post.objects.get(pk=pk)
+    post_data = post.__dict__
+    post_data.pop("_state")
+    post_data = json.dumps(post_data, default=date_time_handler)
 
-    return JsonResponse(data={}, status=HTTPStatus.OK)
+    return JsonResponse(data={"post_data": post_data}, status=HTTPStatus.OK)
 
 
 @require_http_methods(["PUT"])

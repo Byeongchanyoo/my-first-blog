@@ -35,11 +35,11 @@ class TestPost(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         # And: 생성된 post 의 개수가 30개로 일치해야 한다.
-        post_list = json.loads(response.json()['post_list'])
+        post_list = json.loads(response.json()["post_data"])
         self.assertEqual(len(post_list), 30)
 
-    def test_post_detail_should_return_200_ok_when_use_valid_pk(self):
-        # Given: 1개의 post를 생성하고,
+    def test_post_detail_should_return_200_ok_when_use_vaild_pk_and_post_and_response_contents_should_be_same(self):
+        # Given: 1개의 post 를 생성하고,
         post = self._create_new_post(
             user=self.user, title="test_post_detail_title", text="test_post_detail_text"
         )
@@ -50,9 +50,15 @@ class TestPost(TestCase):
         # Then: 리턴된 status_code 가 200이 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+        # And: post 와 response 로 받은 contents 가 같아야 한다.
+        post_data = json.loads(response.json()["post_data"])
+        self.assertEqual(post_data["title"], post.title)
+        self.assertEqual(post_data["text"], post.text)
+
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
         post = self._create_new_post(user=self.user, title="update_test", text="update_text")
+
         # And: 사용자가 수정을 요구한 데이터를 설정한다음
         put_data = {"title": "updated test title", "text": "updated test text"}
 
