@@ -55,6 +55,16 @@ class TestPost(TestCase):
         self.assertEqual(post_data["title"], post.title)
         self.assertEqual(post_data["text"], post.text)
 
+    def test_post_detail_should_return_404_not_found_when_use_invail_pk(self):
+        # Given: invalid 한 pk 값을 정하고,
+        invalid_pk = 123456
+
+        # When: 그 값으로 post_detail view 를 호출하면,
+        response = self.client.get(reverse("post_detail", kwargs={"pk": invalid_pk}))
+
+        # Then: 리턴된 status_code 가 404이 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
         post = self._create_new_post(user=self.user, title="update_test", text="update_text")
@@ -76,6 +86,7 @@ class TestPost(TestCase):
     def test_post_update_should_return_404_does_not_exist(self):
         # Given: 유효하지않은 pk 가 주어지고,
         invalid_pk = 123456
+
         # And: 사용자가 수정을 요구한 데이터를 설정한다음
         put_data = {"title": "updated test title", "text": "updated test text"}
 

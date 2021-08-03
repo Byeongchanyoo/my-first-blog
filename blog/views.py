@@ -22,7 +22,10 @@ def post_list(request):
 
 @require_http_methods(["GET"])
 def post_detail(request, pk):
-    post = Post.objects.get(pk=pk)
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     post_data = post.__dict__
     post_data.pop("_state")
     post_data = json.dumps(post_data, default=date_time_handler)
