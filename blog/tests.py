@@ -21,12 +21,22 @@ class TestPost(TestCase):
         self.user.set_password(self.password)
         self.user.save()
 
-    def test_post_list_should_return_200_ok(self):
-        # Given:
+    def test_post_list_should_return_200_ok_and_list_length_should_30(self):
+        # Given: 30개의 새로운 post 생성하고,
+        for _ in range(30):
+            post = self._create_new_post(
+                user=self.user, title="test_post_list_title", text="test_post_list_text"
+            )
+
         # When: post_list view를 호출하면,
         response = self.client.get(reverse("post_list"))
+
         # Then: status_code가 200이 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        # And: 생성된 post의 개수가 30개로 일치해야 한다.
+        post_list = json.loads(response.json()['post_list'])
+        self.assertEqual(len(post_list), 30)
 
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
