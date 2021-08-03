@@ -5,6 +5,11 @@ from django.http import JsonResponse
 from .models import Post
 import json
 
+
+@require_http_methods(["GET"])
+def post_list(request):
+    return JsonResponse(data={}, status=HTTPStatus.OK)
+
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
     try:
