@@ -1,9 +1,22 @@
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_http_methods
 from http import HTTPStatus
-from django.utils import timezone
 from django.http import JsonResponse
 from .models import Post
 import json
+
+
+@require_http_methods(["POST"])
+def post_new(request):
+    post_data = request.POST
+    try:
+        post = Post.objects.create(
+            title=post_data["title"], text=post_data["text"]
+        )
+    except MultiValueDictKeyError:
+        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+    return JsonResponse(data={"id": post.id}, status=HTTPStatus.CREATED)
+
 
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
