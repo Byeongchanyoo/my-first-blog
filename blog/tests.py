@@ -14,6 +14,11 @@ class TestPost(TestCase):
         )
         return post
 
+    def _create_new_comment(self, post, author, text):
+        comment = Comment.objects.create(
+            post=post, author=author, text=text
+        )
+
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
         post = self._create_new_post(title="update_test", text="update_text")
@@ -54,12 +59,20 @@ class TestPost(TestCase):
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_comment_list_should_return_200_ok_when_use_valid_pk(self):
+    def test_comment_list_should_return_200_ok_when_use_valid_pk_and_list_length_should_be_30(self):
         # Given: post 1개를 생성하고, 그 포스트에 댓글을 단 후에
         post = self._create_new_post(title="comment_list_test", text="comment_list_text")
+        for _ in range(30):
+            self._create_new_comment(
+                post=post, author="list_test_author", text="list_test_text"
+            )
 
         # When: comment_list view 를 호풀하면,
         response = self.client.get(reverse("comment_list", kwargs={"pk": post.pk}))
 
         # Then: status_code 가 200 OK 이어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        # And: list 의 길이가 30이어야 한다.
+        comment_list = json.loads(response.json()["comments_list"])
+        self.assertEqual(len(comment_list), 30)
