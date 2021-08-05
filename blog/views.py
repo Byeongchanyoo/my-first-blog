@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from .models import Post
 import json
 
+
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
     try:
@@ -22,6 +23,12 @@ def post_edit(request, pk):
         post.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
 
+
 @require_http_methods(["DELETE"])
 def post_delete(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+    post.delete()
     return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
