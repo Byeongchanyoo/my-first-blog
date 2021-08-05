@@ -21,3 +21,7 @@ def post_edit(request, pk):
     else:
         post.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
+
+@require_http_methods(["DELETE"])
+def post_delete(request, pk):
+    return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
