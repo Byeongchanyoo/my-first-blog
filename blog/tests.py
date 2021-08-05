@@ -76,3 +76,13 @@ class TestPost(TestCase):
         # And: list 의 길이가 30이어야 한다.
         comment_list = json.loads(response.json()["comments_list"])
         self.assertEqual(len(comment_list), 30)
+
+    def test_comment_list_should_return_404_not_found_when_use_invalid_pk(self):
+        # Given: invalid 한 pk 가 주어지고,
+        invalid_pk = 123456
+
+        # When: comment_list view 를 호출하면,
+        response = self.client.get(reverse("comment_list", kwargs={"pk": invalid_pk}))
+
+        # Then: status_code 가 404 NOT_FOUND 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
