@@ -81,3 +81,14 @@ class TestPost(TestCase):
 
         # Then: status_code 가 404 NOT FOUND 가 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_comment_new_should_return_400_bad_request_when_use_invalid_data(self):
+        # Given: post 를 생성하여 valid 한 pk 를 이용하고, invalid data 를 이용하여
+        post = self._create_new_post(title="comment_test_title", text="comment_test_text")
+        invalid_data = {"text": "test_comment_author"}
+
+        # When: comment_new view 를 호출하면,
+        response = self.client.post(reverse("comment_new", kwargs={"pk": post.pk}), data=invalid_data)
+
+        # Then: status_code 가 400 BAD_REQUEST 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)

@@ -1,3 +1,4 @@
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_http_methods
 from http import HTTPStatus
 from django.utils import timezone
@@ -31,5 +32,8 @@ def comment_new(request, pk):
     except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     request_data = request.POST
-    comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
+    try:
+        comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
+    except MultiValueDictKeyError:
+        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     return JsonResponse(data={}, status=HTTPStatus.CREATED)
