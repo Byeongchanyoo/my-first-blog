@@ -56,7 +56,7 @@ class TestPost(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_comment_new_should_return_201_created_when_use_valid_pk_and_valid_data_and_response_should_be_same(self):
-        # Given: post 객체를 생성하고, valid 한 pk를 이용하여 댓글을 달면,
+        # Given: post 객체를 생성하고, valid 한 pk와 valid 한 데이터로,
         post = self._create_new_post(title="comment_test_title", text="comment_test_text")
         valid_data = {"author": "test_comment_author", "text": "test_comment_author"}
 
@@ -70,3 +70,14 @@ class TestPost(TestCase):
         comment_data = Comment.objects.get(post=post)
         self.assertEqual(comment_data.author, valid_data["author"])
         self.assertEqual(comment_data.text, valid_data["text"])
+
+    def test_comment_new_should_return_404_not_found_when_use_invalid_pk(self):
+        # Given: invalid 한 pk를 이용하여,
+        invalid_pk = 123456
+        valid_data = {"author": "test_comment_author", "text": "test_comment_author"}
+
+        # When: comment_new view 를 호출하면,
+        response = self.client.post(reverse("comment_new", kwargs={"pk": invalid_pk}), data=valid_data)
+
+        # Then: status_code 가 404 NOT FOUND 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

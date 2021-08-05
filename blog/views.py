@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from .models import Post, Comment
 import json
 
+
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
     try:
@@ -20,11 +21,15 @@ def post_edit(request, pk):
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     else:
         post.save()
-    return JsonResponse(data={}, status=HTTPStatus.OK)\
+    return JsonResponse(data={}, status=HTTPStatus.OK)
+
 
 @require_http_methods(["POST"])
 def comment_new(request, pk):
-    post = Post.objects.get(pk=pk)
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     request_data = request.POST
     comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
     return JsonResponse(data={}, status=HTTPStatus.CREATED)
