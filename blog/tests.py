@@ -8,22 +8,15 @@ import json
 
 
 class TestPost(TestCase):
-    def _create_new_post(self, user, title, text):
+    def _create_new_post(self, title, text):
         post = Post.objects.create(
-            author=self.user, title=title, text=text, published_date=timezone.now()
+            title=title, text=text, published_date=timezone.now()
         )
         return post
 
-    def setUp(self):
-        self.username = "Testuser"
-        self.password = "Test123"
-        self.user = User.objects.create_user(username=self.username, password=self.password)
-        self.user.set_password(self.password)
-        self.user.save()
-
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
-        post = self._create_new_post(user=self.user, title="update_test", text="update_text")
+        post = self._create_new_post(title="update_test", text="update_text")
         # And: 사용자가 수정을 요구한 데이터를 설정한다음
         put_data = {"title": "updated test title", "text": "updated test text"}
 
@@ -51,7 +44,7 @@ class TestPost(TestCase):
 
     def test_post_update_should_return_400_bad_request(self):
         # Given: post 1개를 생성하고,
-        post = self._create_new_post(user=self.user, title="update_test", text="update_text")
+        post = self._create_new_post(title="update_test", text="update_text")
         # And: 사용자가 수정을 요구한 데이터를 설정한다음
         put_data = {"title": "updated test title"}
 
