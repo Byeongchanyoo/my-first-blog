@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from .models import Post
 import json
 
+
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
     try:
@@ -20,4 +21,10 @@ def post_edit(request, pk):
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     else:
         post.save()
+    return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
+@require_http_methods(["GET"])
+def comment_list(request, pk):
+    post = Post.objects.get(pk=pk)
     return JsonResponse(data={}, status=HTTPStatus.OK)
