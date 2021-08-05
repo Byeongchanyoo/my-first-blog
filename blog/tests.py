@@ -45,6 +45,7 @@ class TestPost(TestCase):
     def test_post_update_should_return_400_bad_request(self):
         # Given: post 1개를 생성하고,
         post = self._create_new_post(title="update_test", text="update_text")
+
         # And: 사용자가 수정을 요구한 데이터를 설정한다음
         put_data = {"title": "updated test title"}
 
@@ -53,3 +54,19 @@ class TestPost(TestCase):
 
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_comment_new_should_return_201_created_when_use_valid_pk_and_valid_data_and_response_should_be_same(self):
+        # Given: post 객체를 생성하고, valid 한 pk를 이용하여 댓글을 달면,
+        post = self._create_new_post(title="comment_test_title", text="comment_test_text")
+        valid_data = {"author": "test_comment_author", "text": "test_comment_author"}
+
+        # When: comment_new view 를 호출하면,
+        response = self.client.post(reverse("comment_new", kwargs={"pk": post.pk}),data=valid_data)
+
+        # Then: status_code 가 201 CREATED 이어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        # And: 전달받은 content 와 valid_data 의 content 가 같아야 한다.
+        comment_data = Comment.objects.get(post=post)
+        self.assertEqual(comment_data.author, valid_data["author"])
+        self.assertEqual(comment_data.text, valid_data["text"])

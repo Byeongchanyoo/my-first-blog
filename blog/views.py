@@ -2,7 +2,7 @@ from django.views.decorators.http import require_http_methods
 from http import HTTPStatus
 from django.utils import timezone
 from django.http import JsonResponse
-from .models import Post
+from .models import Post, Comment
 import json
 
 @require_http_methods(["PUT"])
@@ -20,4 +20,11 @@ def post_edit(request, pk):
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     else:
         post.save()
-    return JsonResponse(data={}, status=HTTPStatus.OK)
+    return JsonResponse(data={}, status=HTTPStatus.OK)\
+
+@require_http_methods(["POST"])
+def comment_new(request, pk):
+    post = Post.objects.get(pk=pk)
+    request_data = request.POST
+    comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
+    return JsonResponse(data={}, status=HTTPStatus.CREATED)
