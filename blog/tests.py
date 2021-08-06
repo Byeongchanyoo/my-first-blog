@@ -14,6 +14,12 @@ class TestPost(TestCase):
         )
         return post
 
+    def _create_new_comment(self, post, author, text):
+        comment = Comment.objects.create(
+            post=post, author=author, text=text
+        )
+        return comment
+
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
         post = self._create_new_post(title="update_test", text="update_text")
@@ -53,3 +59,24 @@ class TestPost(TestCase):
 
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_comment_update_should_return_200_ok_when_post_and_comment_are_valid_and_data_and_comment_content_should_be_same(self):
+        # Given: valid 한 post 와 comment pk 가 주어지고,
+        target_post = self._create_new_post(title="update_test_title", text="update_test_text")
+        non_target_post = self._create_new_post(title="second_test_title", text="second_test_text")
+        test_comment = self._create_new_comment(post=target_post, author="update_test_author", text="update_test_text")
+        for i in range(2):
+            self._create_new_comment(post=target_post, author="target_post_comment_author", text="target_post_comment_text")
+        self._create_new_comment(post=non_target_post, author="non_target_post_comment_author", text="non_target_post_comment_text")
+        valid_update_data = {"author": "fixed_author", "text": "fixed text"}
+
+        # When: comment_update view 를 호출하면,
+        response = self.client.put(reverse("comment_edit", kwargs={"pk": target_post.pk, "id": test_comment.id}), data=valid_update_data)
+
+        # Then: status_code 가 200 OK 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        # And: comment 의 내용이 valid_update_data 와 일치해야 한다.
+        comment_data = Comment.objects.get(id=test_comment.id)
+        self.assertEqual(comment_data.author, valid_update_data["author"])
+        self.assertEqual(comment_data.text, valid_update_data["text"])
