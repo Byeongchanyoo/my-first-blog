@@ -1,9 +1,16 @@
 from django.views.decorators.http import require_http_methods
 from http import HTTPStatus
-from django.utils import timezone
 from django.http import JsonResponse
-from .models import Post
+from .models import Post, Comment
 import json
+import datetime
+
+
+def date_time_handler(value):
+    if isinstance(value, datetime.date):
+        return value.strftime("%Y-%m-%d")
+    raise TypeError("not JSON serializable")
+
 
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
@@ -21,3 +28,13 @@ def post_edit(request, pk):
     else:
         post.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
+@require_http_methods(["GET"])
+def comment_list(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+    comments_list = json.dumps([comment for comment in post.comments.values()], default=date_time_handler)
+    return JsonResponse(data={"comments_list": comments_list}, status=HTTPStatus.OK)
