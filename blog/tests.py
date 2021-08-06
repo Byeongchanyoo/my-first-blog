@@ -57,8 +57,8 @@ class TestPost(TestCase):
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_comment_delete_should_return_204_no_content(self):
-        # Given: post와 comment를 2개 생성하고, 그 pk와 id 를 이용하여
+    def test_comment_delete_should_return_204_no_content_and_the_number_of_comments_should_reduce(self):
+        # Given: post 와 comment 를 2개 생성하고, 그 pk와 id 를 이용하여
         post = self._create_new_post(title="delete_test_title", text="delete_test_text")
         delete_comment = self._create_new_comment(post=post, author="will_delete_author", text="will_delete_text")
         remain_comment = self._create_new_comment(post=post, author="remain_author", text="remain_author")
@@ -71,3 +71,15 @@ class TestPost(TestCase):
 
         # And: post 가 가지고 있는 comment 의 개수가 1개가 되어야 한다.
         self.assertEqual(len(post.comments.values()), 1)
+
+    def test_comment_delete_should_return_404_not_found_when_use_invalid_pk(self):
+        # Given: invalid 한 pk 가 주어지고
+        post = self._create_new_post(title="delete_test_title", text="delete_test_text")
+        comment = self._create_new_comment(post=post, author="delete_test_author", text="delete_test_text")
+        invalid_pk = 123456
+
+        # When: comment delete view 를 호출하면,
+        response = self.client.delete(reverse("comment_delete", kwargs={"pk": invalid_pk, "id": comment.id}))
+
+        # Then: status_code 가 404 NOT_FOUND 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
