@@ -80,3 +80,15 @@ class TestPost(TestCase):
         comment_data = Comment.objects.get(id=test_comment.id)
         self.assertEqual(comment_data.author, valid_update_data["author"])
         self.assertEqual(comment_data.text, valid_update_data["text"])
+
+    def test_comment_update_should_return_404_not_found_when_invalid_pk(self):
+        # Given: invalid 한 pk 가 주어지고
+        invalid_pk = 123456
+        post = self._create_new_post(title="update_not_found_test_title", text="update_not_found_test_title")
+        comment = self._create_new_comment(post=post, author="update_not_found_test_author", text="update_not_found_test_text")
+
+        # When: comment_update view 를 호출하면,
+        response = self.client.put(reverse("comment_edit", kwargs={"pk": invalid_pk, "id": comment.id}))
+
+        # Then: status_code 가 404 NOT_FOUND가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

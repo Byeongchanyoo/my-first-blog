@@ -25,7 +25,10 @@ def post_edit(request, pk):
 
 @require_http_methods(["PUT"])
 def comment_edit(request, pk, id):
-    comment = Comment.objects.select_related('post').get(id=id, pk=pk)
+    try:
+        comment = Comment.objects.select_related('post').get(id=id, pk=pk)
+    except Comment.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     request_body = json.loads(request.body.decode("utf-8").replace("'", '"'))
     comment.author = request_body["author"]
     comment.text = request_body["text"]
