@@ -9,10 +9,13 @@ import json
 
 class TestPost(TestCase):
     def _create_new_post(self, title, text):
-        post = Post.objects.create(
+        return Post.objects.create(
             title=title, text=text, published_date=timezone.now()
         )
-        return post
+    def _create_new_comment(self, post, author, text):
+        return Comment.objects.create(
+            post=post, author=author, text=text
+        )
 
     def test_post_update_should_return_200_ok(self):
         # Given: post 1개를 생성하고,
@@ -53,3 +56,18 @@ class TestPost(TestCase):
 
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_comment_delete_should_return_204_no_content(self):
+        # Given: post와 comment를 2개 생성하고, 그 pk와 id 를 이용하여
+        post = self._create_new_post(title="delete_test_title", text="delete_test_text")
+        delete_comment = self._create_new_comment(post=post, author="will_delete_author", text="will_delete_text")
+        remain_comment = self._create_new_comment(post=post, author="remain_author", text="remain_author")
+
+        # When: comment delete view 를 호출하면,
+        response = self.client.delete(reverse("comment_delete", kwargs={"pk": post.pk, "id": delete_comment.id}))
+
+        # Then: status_code 가 204 NO_CONTENT 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+        # And: post 가 가지고 있는 comment 의 개수가 1개가 되어야 한다.
+        self.assertEqual(len(post.comments.values()), 1)
