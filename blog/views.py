@@ -30,8 +30,11 @@ def comment_edit(request, pk, id):
     except Comment.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     request_body = json.loads(request.body.decode("utf-8").replace("'", '"'))
-    comment.author = request_body["author"]
-    comment.text = request_body["text"]
+    try:
+        comment.author = request_body["author"]
+        comment.text = request_body["text"]
+    except KeyError:
+        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     comment.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
 
