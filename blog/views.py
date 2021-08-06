@@ -36,6 +36,5 @@ def comment_list(request, pk):
         post = Post.objects.get(pk=pk)
     except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-    comments = Comment.objects.filter(post=post)
-    comments_list = json.dumps([comment for comment in comments.values()], default=date_time_handler)
+    comments_list = json.dumps([comment for comment in post.comments.values()], default=date_time_handler)
     return JsonResponse(data={"comments_list": comments_list}, status=HTTPStatus.OK)
