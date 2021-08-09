@@ -4,6 +4,40 @@ from http import HTTPStatus
 from django.http import JsonResponse
 from .models import Post
 import json
+import datetime
+
+
+def date_time_handler(value):
+    if isinstance(value, datetime.date):
+        return value.strftime("%Y-%m-%d")
+    raise TypeError("not JSON serializable")
+
+
+@require_http_methods(["GET"])
+def post_list(request):
+    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by("published_date")
+    post_data = json.dumps([post for post in posts.values()], default=date_time_handler)
+    return JsonResponse(data={"post_data": post_data}, status=HTTPStatus.OK)
+
+
+@require_http_methods(["GET"])
+def post_detail(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+    else:
+        post_data = json.dumps(
+            {
+                "title": post.title,
+                "text": post.text,
+                "created_date": post.created_date,
+                "published_date": post.published_date,
+            }, default=date_time_handler
+        )
+
+    return JsonResponse(data={"post_data": post_data}, status=HTTPStatus.OK)
+
 
 
 @require_http_methods(["POST"])
