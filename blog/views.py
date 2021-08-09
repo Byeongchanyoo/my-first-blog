@@ -72,17 +72,6 @@ def post_edit(request, pk):
         post.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
 
-
-@require_http_methods(["POST"])
-def comment_new(request, pk):
-request_data = request.POST
-    try:
-        comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
-    except MultiValueDictKeyError:
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
-    return JsonResponse(data={}, status=HTTPStatus.CREATED)
-  
-
 @require_http_methods(["DELETE"])
 def post_delete(request, pk):
     try:
@@ -94,3 +83,13 @@ def post_delete(request, pk):
         post.delete()
     return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
 
+
+@require_http_methods(["POST"])
+def comment_new(request, pk):
+request_data = request.POST
+    try:
+        comment = Comment.objects.create(post=post, author=request_data["author"], text=request_data["text"])
+    except MultiValueDictKeyError:
+        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+    return JsonResponse(data={}, status=HTTPStatus.CREATED)
+  
