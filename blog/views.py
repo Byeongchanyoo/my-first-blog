@@ -26,9 +26,15 @@ def post_detail(request, pk):
         post = Post.objects.get(pk=pk)
     except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-    post_data = post.__dict__
-    post_data.pop("_state")
-    post_data = json.dumps(post_data, default=date_time_handler)
+    else:
+        post_data = json.dumps(
+            {
+                "title": post.title,
+                "text": post.text,
+                "created_date": post.created_date,
+                "published_date": post.published_date,
+            }, default=date_time_handler
+        )
 
     return JsonResponse(data={"post_data": post_data}, status=HTTPStatus.OK)
 
