@@ -9,12 +9,13 @@ import json
 @require_http_methods(["POST"])
 def post_new(request):
     post_data = request.POST
-    try:
-        post = Post.objects.create(
-            title=post_data["title"], text=post_data["text"]
-        )
-    except KeyError:
+    if post_data.get("title") is None or post_data.get("text") is None:
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+
+    post = Post.objects.create(
+        title=post_data["title"], text=post_data["text"]
+    )
+
     return JsonResponse(data={"id": post.id}, status=HTTPStatus.CREATED)
 
 
