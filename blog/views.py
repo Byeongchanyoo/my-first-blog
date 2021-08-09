@@ -30,5 +30,6 @@ def comment_delete(request, pk, id):
         comment = Comment.objects.select_related('post').get(id=id, pk=pk)
     except Comment.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-    comment.delete()
+    else:
+        comment.delete()
     return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
