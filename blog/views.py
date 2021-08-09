@@ -13,7 +13,7 @@ def post_new(request):
         post = Post.objects.create(
             title=post_data["title"], text=post_data["text"]
         )
-    except MultiValueDictKeyError:
+    except KeyError:
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     return JsonResponse(data={"id": post.id}, status=HTTPStatus.CREATED)
 
