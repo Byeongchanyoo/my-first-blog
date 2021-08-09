@@ -2,8 +2,9 @@ from django.views.decorators.http import require_http_methods
 from http import HTTPStatus
 from django.utils import timezone
 from django.http import JsonResponse
-from .models import Post
+from .models import Post, Comment
 import json
+
 
 @require_http_methods(["PUT"])
 def post_edit(request, pk):
@@ -21,3 +22,14 @@ def post_edit(request, pk):
     else:
         post.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
+@require_http_methods(["DELETE"])
+def comment_delete(request, pk, id):
+    try:
+        comment = Comment.objects.select_related('post').get(id=id, pk=pk)
+    except Comment.DoesNotExist:
+        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+    else:
+        comment.delete()
+    return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
