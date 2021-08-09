@@ -13,6 +13,9 @@ class TestPost(TestCase):
         )
         return post
 
+    def test_post_update_should_return_200_ok(self):
+        # Given: post 1개를 생성하고,
+        post = self._create_new_post(title="update_test", text="update_text")
 
     def test_post_list_should_return_200_ok_and_list_length_should_30(self):
         # Given: 30개의 새로운 post 생성하고,
@@ -126,3 +129,23 @@ class TestPost(TestCase):
 
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_post_delete_should_return_204_NO_CONTENT_when_delete_valid_pk(self):
+        # Given: 지울 post 하나를 생성하고,
+        post = self._create_new_post(title="delete_text_title", text="delete_test_text")
+
+        # When: post_delete view 를 호출하면,
+        response = self.client.delete(reverse("post_delete", kwargs={"pk": post.pk}))
+
+        # Then: status_code 가 204 가 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+    def test_post_delete_should_return_404_not_found_when_delete_invalid_pk(self):
+        # Given: invalid 한 pk 가 주어지고,
+        invalid_pk = 123456
+
+        # When: post_delete view 를 호출하면,
+        response = self.client.delete(reverse("post_delete", kwargs={"pk": invalid_pk}))
+
+        # Then: status_code 가 404 이 되어야 한다.
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
