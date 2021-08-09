@@ -30,5 +30,6 @@ def post_delete(request, pk):
         post = Post.objects.get(pk=pk)
     except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-    post.delete()
+    else:
+        post.delete()
     return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)
