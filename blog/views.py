@@ -24,11 +24,12 @@ def post_edit(request, pk):
 
 
 @require_http_methods(["PUT"])
-def comment_edit(request, pk, id):
+def comment_edit(request, post_id, comment_id):
     try:
-        comment = Comment.objects.select_related('post').get(id=id, pk=pk)
+        post = Post.objects.get(id=post_id)
     except Comment.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+    comment = Comment.objects.get(post=post, id=comment_id)
     request_body = json.loads(request.body.decode("utf-8").replace("'", '"'))
     try:
         comment.author = request_body["author"]
