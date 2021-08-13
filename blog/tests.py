@@ -61,7 +61,7 @@ class TestPost(TestCase):
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_comment_update_should_return_200_ok_when_post_and_comment_are_valid_and_data_and_comment_content_should_be_same(self):
+    def test_comment_update_should_return_200_ok_and_response_and_valid_update_data_should_be_same(self):
         # Given: post 와 comment 를 생성하고,
         target_post = self._create_new_post(title="update_test_title", text="update_test_text")
         test_comment = self._create_new_comment(post=target_post, author="update_test_author", text="update_test_text")
@@ -80,7 +80,7 @@ class TestPost(TestCase):
         self.assertEqual(comment_data.author, valid_update_data["author"])
         self.assertEqual(comment_data.text, valid_update_data["text"])
 
-    def test_comment_update_should_return_404_not_found_when_invalid_pk(self):
+    def test_comment_update_should_return_404_not_found_on_invalid_pk(self):
         # Given: invalid 한 pk 가 주어지고
         invalid_pk = 123456
         post = self._create_new_post(title="update_not_found_test_title", text="update_not_found_test_title")
@@ -92,7 +92,7 @@ class TestPost(TestCase):
         # Then: status_code 가 404 NOT_FOUND가 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
-    def test_comment_update_should_return_400_bad_request_when_using_invalid_data(self):
+    def test_comment_update_should_return_400_bad_request_on_using_invalid_data(self):
         # Given: valid한 pk 와 id 의 댓글에 invalid 한 데이터가 주어지고,
         post = self._create_new_post(title="404_test_title", text="404_test_text")
         comment = self._create_new_comment(post=post, author="404_test_author", text="404_test_text")
