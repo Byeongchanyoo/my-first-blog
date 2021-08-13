@@ -7,9 +7,9 @@ import json
 
 
 @require_http_methods(["PUT"])
-def post_edit(request, pk):
+def post_edit(request, post_id):
     try:
-        post = Post.objects.get(pk=pk)
+        post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     request_body = json.loads(request.body.decode("utf-8").replace("'", '"'))
@@ -25,11 +25,12 @@ def post_edit(request, pk):
 
 
 @require_http_methods(["DELETE"])
-def comment_delete(request, pk, id):
+def comment_delete(request, post_id, comment_id):
     try:
-        comment = Comment.objects.select_related('post').get(id=id, pk=pk)
-    except Comment.DoesNotExist:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     else:
+        comment = Comment.objects.get(post=post, id=comment_id)
         comment.delete()
     return JsonResponse(data={}, status=HTTPStatus.NO_CONTENT)

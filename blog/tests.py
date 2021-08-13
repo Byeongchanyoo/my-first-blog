@@ -24,7 +24,7 @@ class TestPost(TestCase):
         put_data = {"title": "updated test title", "text": "updated test text"}
 
         # When: post_update view 를 호출하면,
-        response = self.client.put(reverse("post_edit", kwargs={"pk": post.pk}), data=put_data)
+        response = self.client.put(reverse("post_edit", kwargs={"post_id": post.pk}), data=put_data)
 
         # Then: status_code가 200으로 리턴되어야 한다
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -40,7 +40,7 @@ class TestPost(TestCase):
         put_data = {"title": "updated test title", "text": "updated test text"}
 
         # When: post_update view를 호출하면,
-        response = self.client.put(reverse("post_edit", kwargs={"pk": invalid_pk}), data=put_data)
+        response = self.client.put(reverse("post_edit", kwargs={"post_id": invalid_pk}), data=put_data)
 
         # Then: status_code가 404로 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
@@ -52,7 +52,7 @@ class TestPost(TestCase):
         put_data = {"title": "updated test title"}
 
         # When : post update 요청
-        response = self.client.put(reverse("post_edit", kwargs={"pk": post.pk}), data=put_data)
+        response = self.client.put(reverse("post_edit", kwargs={"post_id": post.pk}), data=put_data)
 
         # Then : Bad_Request 반환하는지 확인
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -64,7 +64,7 @@ class TestPost(TestCase):
         remain_comment = self._create_new_comment(post=post, author="remain_author", text="remain_author")
 
         # When: comment delete view 를 호출하면,
-        response = self.client.delete(reverse("comment_delete", kwargs={"pk": post.pk, "id": delete_comment.id}))
+        response = self.client.delete(reverse("comment_delete", kwargs={"post_id": post.pk, "comment_id": delete_comment.id}))
 
         # Then: status_code 가 204 NO_CONTENT 가 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
@@ -79,7 +79,7 @@ class TestPost(TestCase):
         invalid_pk = 123456
 
         # When: comment delete view 를 호출하면,
-        response = self.client.delete(reverse("comment_delete", kwargs={"pk": invalid_pk, "id": comment.id}))
+        response = self.client.delete(reverse("comment_delete", kwargs={"post_id": invalid_pk, "comment_id": comment.id}))
 
         # Then: status_code 가 404 NOT_FOUND 가 되어야 한다.
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
