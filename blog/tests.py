@@ -83,8 +83,6 @@ class TestPost(TestCase):
     def test_comment_update_should_return_404_not_found_on_invalid_pk(self):
         # Given: invalid 한 pk 가 주어지고
         invalid_pk = 123456
-        post = self._create_new_post(title="update_not_found_test_title", text="update_not_found_test_title")
-        comment = self._create_new_comment(post=post, author="update_not_found_test_author", text="update_not_found_test_text")
 
         # When: comment_update view 를 호출하면,
         response = self.client.put(reverse("comment_edit", kwargs={"pk": invalid_pk, "id": comment.id}))
@@ -98,7 +96,7 @@ class TestPost(TestCase):
         comment = self._create_new_comment(post=post, author="404_test_author", text="404_test_text")
         invalid_data = {"text": "no_author_text"}
 
-        # When: comment_update view 를 호풀하면,
+        # When: comment_update view 를 호출하면,
         response = self.client.put(reverse("comment_edit", kwargs={"pk": post.pk, "id": comment.id}), data=invalid_data)
 
         # Then: status_code 가 400 BAD_REQUEST 가 되어야 한다.
