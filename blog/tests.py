@@ -91,9 +91,11 @@ class TestPost(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_comment_update_should_return_400_bad_request_on_using_invalid_data(self):
-        # Given: valid한 pk 와 id 의 댓글에 invalid 한 데이터가 주어지고,
+        # Given: post 와 comment 를 생성하고
         post = self._create_new_post(title="404_test_title", text="404_test_text")
         comment = self._create_new_comment(post=post, author="404_test_author", text="404_test_text")
+
+        # And: invalid 한 데이터를 이용하여,
         invalid_data = {"text": "no_author_text"}
 
         # When: comment_update view 를 호출하면,
